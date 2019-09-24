@@ -107,6 +107,7 @@ class Board extends React.Component {
         }
       }
     }
+    this.onChangeTurn();
   }
 
   handleClick(i, j) {
@@ -122,7 +123,6 @@ class Board extends React.Component {
       history: history.concat([{
         squares: squares
       }]),
-      turn: !this.state.turn,
       moveStep: history.length,
       moveStepLocation: {...moveStepLocation,  [history.length]: i + ', ' + j}
     });
