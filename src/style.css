@@ -23,7 +23,7 @@ body {
   border-left: 1px solid grey;
 }
 button.square {
-  width: 30px;
+  width: 28px;
   height: 100%;
   background: none;
   border: 1px solid grey;
@@ -36,7 +36,7 @@ button.square:focus{
 }
 
 .board--row {
-  height: 30px;
+  height: 28px;
   display: flex;
 }
 
@@ -45,9 +45,15 @@ button.square:focus{
   text-align: center;
   margin-bottom: 110px;
   position: relative;
-  margin-left: 40px;
+  
+}
+.turn .left{
   margin-right: 40px;
 }
+.turn .right{
+  margin-left: 40px;
+}
+
 .symbol {
   margin-top: 40px;
   font-size: 60px;
@@ -150,12 +156,54 @@ button.square:focus{
 }
 
 .image-container img{
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
 }
 
 .custom-location{
   position: absolute;
     bottom: 30px;
     right: 40px;
+}
+
+.step-move{
+  list-style: none;
+  height: 400px;
+  overflow-y: scroll;
+  position: absolute;
+  right: 40px;
+  top: 100px;
+}
+
+.btn-step{
+  width: 140px;
+}
+.btn-step:hover, .current{
+  background: rgb(0, 162, 255);
+  color: white;
+}
+.step-move li{
+  margin-bottom: 12px;
+  width: 150px;
+}
+
+.step-move::-webkit-scrollbar {
+  width: 6px;
+}
+
+.step-move::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+ 
+.step-move::-webkit-scrollbar-thumb {
+  background: #888; 
+  border-radius: 10px;
+}
+
+.step-move::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
+.highlight{
+  background: #87fff478!important;
 }

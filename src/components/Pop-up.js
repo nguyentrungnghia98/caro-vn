@@ -1,7 +1,6 @@
 import React from 'react';
-import Drawer from 'react-drag-drawer'
-
-
+import Drawer from 'react-drag-drawer';
+import PropTypes from 'prop-types';
 class PopUp extends React.Component{
   render () {
     return (
@@ -23,9 +22,15 @@ class PopUp extends React.Component{
           </button>
         </div>
       </Drawer>
-    )
+    );
   }
 }
 
+PopUp.propTypes = {
+  toggle: PropTypes.bool,
+  onToggle: PropTypes.func,
+  onRestart: PropTypes.func,
+  winner:PropTypes.string
+};
 
 export default PopUp;
