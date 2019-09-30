@@ -166,13 +166,16 @@ button.square:focus{
     right: 40px;
 }
 
+.step-move-container{
+  position: absolute;
+  right: 40px;
+  top: 100px;
+}
 .step-move{
   list-style: none;
   height: 400px;
   overflow-y: scroll;
-  position: absolute;
-  right: 40px;
-  top: 100px;
+  
 }
 
 .btn-step{
@@ -185,6 +188,7 @@ button.square:focus{
 .step-move li{
   margin-bottom: 12px;
   width: 150px;
+  position: relative;
 }
 
 .step-move::-webkit-scrollbar {
@@ -206,4 +210,15 @@ button.square:focus{
 
 .highlight{
   background: #87fff478!important;
+}
+
+.btn-change{
+  margin-bottom: 8px;
+  margin-left: 11px;
+  background: white;
+  border: 1px solid #d8d8d8;
+}
+.btn-change:hover{
+  background: #a9a9a9!important;
+  color: white;
 }
