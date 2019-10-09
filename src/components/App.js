@@ -1,10 +1,10 @@
 import React from 'react';
-import Board from './Board';
+import PlayCaro from '../containers/PlayCaro';
 
 const App = () => {
   return (
     <div className="container">
-      <Board />
+      <PlayCaro />
     </div>
   );
 };

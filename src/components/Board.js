@@ -1,95 +1,47 @@
+/* eslint-disable no-return-assign */
 import React from 'react';
 import shortid from 'shortid';
 import Square from './Square';
-import PopUp from './Pop-up';
+import WinnerPopUp from '../containers/WinnerPopUp';
+import StepContainer from '../containers/StepContainer';
 
 class Board extends React.Component {
   constructor(props) {
     super(props);
     this.length = 20;
     this.size = new Array(this.length).fill(0);
-    this.state = {
-      history: [
-        {
-          squares: Array(this.length)
-            .fill(0)
-            .map(() => Array(this.length).fill(0))
-        }
-      ],
-      moveStepLocation: {},
-      moveStep: 0,
-      toggle: false,
-      isWinner: false,
-      winnerSquares: [],
-      turn: true,
-      isIncrease: true
-    };
+    this.stepMoveEl = React.createRef();
   }
 
-  onChangeOrder = () => {
-    this.setState(state => {
-      return {
-        isIncrease: !state.isIncrease
-      };
-    });
-  };
+  componentWillMount() {
+    this.stepMoveEl = {};
+  }
 
   onRestart = () => {
-    const { turn } = this.state;
-    this.setState({
-      history: [
-        {
-          squares: Array(this.length)
-            .fill(0)
-            .map(() => Array(this.length).fill(0))
-        }
-      ],
-      toggle: false,
-      isWinner: false,
-      winnerSquares: [],
-      moveStepLocation: {},
-      moveStep: 0
-    });
-
-    if (!turn) {
-      this.onChangeTurn();
-    }
+    const { restartCaro } = this.props;
+    restartCaro();
   };
 
   onChangeTurn() {
-    this.setState(state => {
-      return {
-        turn: !state.turn
-      };
-    });
+    const { changeTurn } = this.props;
+    changeTurn();
   }
 
-  toggle = (type, value) => {
-    this.setState({
-      [type]: value
-    });
-  };
-
-  scrollToBottom() {
-    this.stepMoveEl.scrollTop =
-      this.stepMoveEl.scrollHeight - this.stepMoveEl.clientHeight;
+  onUserWin(squares) {
+    console.log('onUserWin was called');
+    const { updateWinnerUI, openWinnerModal } = this.props;
+    updateWinnerUI(squares);
+    openWinnerModal();
   }
 
-  scrollToTop() {
-    this.stepMoveEl.scrollTop = 0;
-  }
+  checkWinner(row, column, oldSquares) {
+    const squares = JSON.parse(JSON.stringify(oldSquares));
+    const { turn } = this.props;
+    const currentSelect = turn ? 'X' : 'O';
+    squares[row][column] = currentSelect;
 
-  moveToStep(step) {
-    this.setState({
-      moveStep: step,
-      turn: step % 2 === 0
-    });
-  }
-
-  checkWinner(row, column, squares) {
     let countRow = 0;
     let countColumn = 0;
-    const currentSelect = squares[row][column];
     const inverseSelect = currentSelect === 'X' ? 'O' : 'X';
     let winnerSquares1 = [];
     let winnerSquares2 = [];
@@ -109,13 +61,9 @@ class Board extends React.Component {
         ) {
           countRow = 0;
         } else {
-          this.setState({
-            isWinner: true,
-            toggle: true,
-            winnerSquares: winnerSquares1
-          });
+          this.onUserWin(winnerSquares1);
+          return;
         }
-        return;
       }
 
       if (squares[i][column] === currentSelect) {
@@ -132,11 +80,7 @@ class Board extends React.Component {
         ) {
           countColumn = 0;
         } else {
-          this.setState({
-            isWinner: true,
-            toggle: true,
-            winnerSquares: winnerSquares2
-          });
+          this.onUserWin(winnerSquares2);
           return;
         }
       }
@@ -165,11 +109,7 @@ class Board extends React.Component {
           ) {
             countRight = 0;
           } else {
-            this.setState({
-              isWinner: true,
-              toggle: true,
-              winnerSquares: winnerSquares1
-            });
+            this.onUserWin(winnerSquares1);
             return;
           }
         }
@@ -192,11 +132,7 @@ class Board extends React.Component {
           ) {
             countLeft = 0;
           } else {
-            this.setState({
-              isWinner: true,
-              toggle: true,
-              winnerSquares: winnerSquares2
-            });
+            this.onUserWin(winnerSquares2);
             return;
           }
         }
@@ -206,39 +142,28 @@ class Board extends React.Component {
   }
 
   handleClick(i, j) {
-    const { history: fullHistory, moveStep, turn, isIncrease } = this.state;
-    const history = fullHistory.slice(0, moveStep + 1);
-    const { moveStepLocation } = this.state;
-    const current = history[history.length - 1];
-    const squares = JSON.parse(JSON.stringify(current.squares));
+    const { history, moveStep, clickSquare, isIncrease } = this.props;
+    const { squares } = history[moveStep];
 
     if (squares[i][j] !== 0) {
       return;
     }
 
-    squares[i][j] = turn ? 'X' : 'O';
-    this.setState({
-      history: history.concat([
-        {
-          squares
-        }
-      ]),
-      moveStep: history.length,
-      moveStepLocation: { ...moveStepLocation, [history.length]: `${i}, ${j}` }
-    });
+    clickSquare(i, j);
     this.checkWinner(i, j, squares);
-    // scroll down
+
+    console.log('ref', this.stepMoveEl);
     setTimeout(() => {
       if (isIncrease) {
-        this.scrollToBottom();
+        this.stepMoveEl.scrollToBottom();
       } else {
-        this.scrollToTop();
+        this.stepMoveEl.scrollToTop();
       }
     }, 300);
   }
 
   renderRow(squares, i) {
-    const { isWinner, winnerSquares } = this.state;
+    const { isWinner, winnerSquares } = this.props;
     return this.size.map((el, j) => {
       const value = squares[i][j] ? squares[i][j] : null;
       let isHighLight = false;
@@ -268,7 +193,7 @@ class Board extends React.Component {
   }
 
   renderLeftSide(winner) {
-    const { turn, isWinner } = this.state;
+    const { turn, isWinner } = this.props;
     return (
       <div className="turn turn-left">
         {turn && (
@@ -282,7 +207,7 @@ class Board extends React.Component {
   }
 
   renderRightSide(winner) {
-    const { turn, isWinner } = this.state;
+    const { turn, isWinner } = this.props;
     return (
       <div className="turn turn-right">
         {!turn && (
@@ -295,38 +220,21 @@ class Board extends React.Component {
     );
   }
 
-  renderMoveStep(history) {
-    const { isIncrease, moveStepLocation, moveStep } = this.state;
-    const { length } = history;
-
-    return history.map((val, move) => {
-      const step = isIncrease ? move : length - move - 1;
-      const location = moveStepLocation[step];
-      const desc = step
-        ? `Go to move #${step} (${location})`
-        : 'Go to game start';
-      return (
-        <li key={`step${step}`}>
-          <button
-            type="button"
-            className={`btn btn-step ${step === moveStep ? 'current' : ''}`}
-            onClick={() => this.moveToStep(step)}
-          >
-            {desc}
-          </button>
-        </li>
-      );
-    });
-  }
-
   render() {
-    const { turn, toggle } = this.state;
+    console.log('props', this.props);
+    const { turn, history, moveStep } = this.props;
     const winner = turn ? 'X' : 'O';
-    const { history, moveStep } = this.state;
-    const current = history[moveStep];
-    const squares = current.squares.slice();
+    const { squares } = history[moveStep];
+
     return (
       <>
+        {this.renderLeftSide(winner)}
+        <div className="board">
+          <WinnerPopUp />
+          {this.renderBoard(squares)}
+        </div>
+        {this.renderRightSide(winner)}
+
         <button
           type="button"
           className="btn btn-restart custom-location"
@@ -335,35 +243,7 @@ class Board extends React.Component {
           Restart
         </button>
 
-        {this.renderLeftSide(winner)}
-        <div className="board">
-          <PopUp
-            toggle={toggle}
-            onRestart={this.onRestart}
-            onToggle={() => this.toggle('toggle', false)}
-            winner={winner}
-          />
-          {this.renderBoard(squares)}
-        </div>
-        {this.renderRightSide(winner)}
-
-        <div className="step-move-container">
-          <button
-            type="button"
-            className="btn btn-change"
-            onClick={this.onChangeOrder}
-          >
-            Change order
-          </button>
-          <ul
-            className="step-move"
-            ref={el => {
-              this.stepMoveEl = el;
-            }}
-          >
-            {this.renderMoveStep(history)}
-          </ul>
-        </div>
+        <StepContainer ref={ref => (this.stepMoveEl = ref)} />
       </>
     );
   }

@@ -9,11 +9,14 @@
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "react-drag-drawer": "^3.3.1",
+    "react-redux": "^7.1.1",
     "react-scripts": "3.1.1",
+    "redux": "^4.0.4",
+    "redux-thunk": "^2.3.0",
     "shortid": "^2.2.15"
   },
   "scripts": {
-    "start": "node server.js",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
